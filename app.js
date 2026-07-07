@@ -11,11 +11,107 @@ function esc(value) {
 }
 
 function img(item) {
-  return `<img src="${esc(item.poster)}" alt="${esc(item.title)}" loading="eager" decoding="async">`;
+  return `<img src="${esc(item.poster)}" alt="${esc(displayTitle(item))}" loading="eager" decoding="async">`;
 }
 
 function href(item) {
   return `./movie.html?id=${encodeURIComponent(item.id)}`;
+}
+
+const titleOverrides = {
+  "drama-42847": "东京罪恶",
+  "drama-65571": "甘尼巴尔",
+  "drama-154": "圣域",
+  "drama-46035": "追随者",
+  "drama-58982": "被抹去的历史",
+  "drama-19444": "早安呼叫",
+  "drama-10706": "工房",
+  "drama-37881": "灵魂互换",
+  "drama-42224": "裸体导演",
+  "drama-69124": "我的幸福婚姻",
+  "drama-79147": "万亿游戏",
+  "drama-73519": "维万特",
+  "drama-67489": "重启人生",
+  "drama-18858": "女医神",
+  "drama-35148": "非自然死亡",
+  "drama-11740": "花样男子",
+  "drama-6940": "交响情人梦",
+  "drama-78451": "恶女女王",
+  "drama-69918": "转向我吧向井君",
+  "drama-37336": "幕府将军",
+  "drama-68683": "火烧御手洗家",
+  "drama-64015": "忍者之家",
+  "drama-84230": "初恋",
+  "drama-37376": "深夜食堂",
+  "drama-50036": "弥留之国的爱丽丝",
+  "drama-59841": "舞伎家的料理人",
+  "drama-27063": "孤独的美食家"
+  ,"live-017": "初恋"
+  ,"anime-39486": "银魂 最终篇"
+  ,"anime-59571": "进击的巨人 最终攻击"
+  ,"anime-45649": "灌篮高手"
+  ,"anime-33050": "命运之夜 天之杯 3 春之歌"
+  ,"anime-32": "新世纪福音战士剧场版 真心为你"
+  ,"anime-4282": "空之境界 剧场版 第五章 矛盾螺旋"
+  ,"anime-33049": "命运之夜 天之杯 2 失去之蝶"
+  ,"anime-36885": "路人女主的养成方法 最终章"
+  ,"anime-21899": "银魂 精选剧场版"
+  ,"anime-50183": "蓝色巨星"
+  ,"anime-5205": "空之境界 剧场版 第七章 杀人考察（后）"
+  ,"anime-31757": "伤物语 2 热血篇"
+  ,"anime-31758": "伤物语 3 冷血篇"
+  ,"anime-9260": "伤物语 1 铁血篇"
+};
+
+const genreLabels = {
+  Action: "动作",
+  Adventure: "冒险",
+  Anime: "动画",
+  "Avant Garde": "实验",
+  "Award Winning": "获奖推荐",
+  "Boys Love": "耽美",
+  Comedy: "喜剧",
+  Drama: "剧情",
+  Horror: "恐怖",
+  Romance: "爱情",
+  "Sci-Fi": "科幻",
+  "Science-Fiction": "科幻",
+  "Slice of Life": "日常",
+  Sports: "运动",
+  Family: "家庭",
+  Historical: "历史",
+  Mystery: "悬疑",
+  Food: "美食",
+  Life: "生活",
+  Reality: "真人秀"
+};
+
+function hasCjk(value) {
+  return /[\u3040-\u30ff\u3400-\u9fff]/.test(String(value || ""));
+}
+
+function displayTitle(item) {
+  if (titleOverrides[item.id]) return titleOverrides[item.id];
+  if (hasCjk(item.title)) return item.title;
+  if (hasCjk(item.originalTitle)) return item.originalTitle;
+  return item.title;
+}
+
+function displayGenre(value) {
+  return genreLabels[value] || value;
+}
+
+function displaySummary(item) {
+  if (item.kind === "动漫电影") {
+    return `${displayTitle(item)}收录真实动漫电影海报、评分、年份、题材和观影指南，适合日本动漫电影在线观看与推荐。`;
+  }
+  if (item.kind === "日剧") {
+    return `${displayTitle(item)}是日本电影在线收录的日剧内容，整理真实海报或剧照、年份评分、${displayGenre(item.genre)}题材、剧情介绍、导演演员资料和观影指南，适合查找日本电影推荐、日剧电影、日本动漫电影与经典日影信息。`;
+  }
+  if (item.kind === "综艺纪录") {
+    return `${displayTitle(item)}是日本电影在线收录的综艺纪录内容，整理真实海报或剧照、年份评分、${displayGenre(item.genre)}题材、剧情介绍、导演演员资料和观影指南，适合查找日本电影推荐、日剧电影、日本动漫电影与经典日影信息。`;
+  }
+  return `${displayTitle(item)}是日本电影收录的日本电影内容，整理真实海报或剧照、年份评分、${displayGenre(item.genre)}题材、剧情介绍、导演演员资料和观影指南，适合查找日本电影推荐、经典日影与高清免费观影信息。`;
 }
 
 function originalLine(item, className = "") {
@@ -28,9 +124,9 @@ function tile(item, size = "") {
     <a href="${href(item)}">
       <div class="cover">${img(item)}<span>${item.kind}</span></div>
       <div class="tile-copy">
-        <h3>${item.title}</h3>
+        <h3>${displayTitle(item)}</h3>
         ${originalLine(item)}
-        <div><b>${item.score}</b><em>${item.year}</em><em>${item.genre}</em></div>
+        <div><b>${item.score}</b><em>${item.year}</em><em>${displayGenre(item.genre)}</em></div>
       </div>
     </a>
   </article>`;
@@ -46,7 +142,7 @@ function channel(kind, title, note) {
 }
 
 function textLink(item, index) {
-  return `<a class="text-link" href="${href(item)}"><span>${String(index + 1).padStart(2, "0")}</span><b>${item.title}</b><em>${item.score}</em></a>`;
+  return `<a class="text-link" href="${href(item)}"><span>${String(index + 1).padStart(2, "0")}</span><b>${displayTitle(item)}</b><em>${item.score}</em></a>`;
 }
 
 function collection(title, note, list, id) {
@@ -74,7 +170,7 @@ function renderHome() {
   const anime = hot(items.filter((item) => item.kind === "动漫电影")).slice(0, 7);
 
   document.getElementById("heroMain").innerHTML = `<a href="${href(hero)}">${img(hero)}
-    <div class="hero-copy"><p>今日推荐 · ${hero.kind}</p><h1>${hero.title}</h1><span>${hero.score} 分 · ${hero.year} · ${hero.genre}</span></div></a>`;
+    <div class="hero-copy"><p>今日推荐 · ${hero.kind}</p><h1>${displayTitle(hero)}</h1><span>${hero.score} 分 · ${hero.year} · ${displayGenre(hero.genre)}</span></div></a>`;
   document.getElementById("heroSide").innerHTML = side.map((item) => tile(item, "side-tile")).join("");
   document.getElementById("channels").innerHTML = [
     channel("电影", "日本电影", "经典日影与院线佳作"),
@@ -96,7 +192,7 @@ function getList() {
   const sort = params.get("sort") || document.getElementById("sortSelect")?.value || "hot";
   let list = [...items];
   if (kind !== "全部") list = list.filter((item) => item.kind === kind);
-  if (q) list = list.filter((item) => `${item.title} ${item.originalTitle} ${item.kind} ${item.genre} ${item.summary}`.toLowerCase().includes(q));
+  if (q) list = list.filter((item) => `${displayTitle(item)} ${item.originalTitle} ${item.kind} ${displayGenre(item.genre)} ${item.summary}`.toLowerCase().includes(q));
   if (sort === "score") list = score(list);
   else if (sort === "year") list = year(list);
   else list = hot(list);
@@ -141,16 +237,16 @@ function renderLibrary() {
 
 function renderDetail() {
   const item = items.find((entry) => entry.id === params.get("id")) || items[0];
-  document.title = `${item.title}-日本电影高清详情`;
-  document.querySelector("meta[name='description']").setAttribute("content", item.summary);
+  document.title = `${displayTitle(item)}-日本电影高清详情`;
+  document.querySelector("meta[name='description']").setAttribute("content", displaySummary(item));
   document.getElementById("detailRoot").innerHTML = `
     <div class="detail-cover">${img(item)}</div>
     <article class="detail-copy">
-      <p class="label">${item.kind} · ${item.genre}</p>
-      <h1>${item.title}</h1>
+      <p class="label">${item.kind} · ${displayGenre(item.genre)}</p>
+      <h1>${displayTitle(item)}</h1>
       ${originalLine(item, "origin")}
-      <div class="badges"><span>${item.score} 分</span><span>${item.year}</span><span>${item.genre}</span></div>
-      <p>${item.summary}</p>
+      <div class="badges"><span>${item.score} 分</span><span>${item.year}</span><span>${displayGenre(item.genre)}</span></div>
+      <p>${displaySummary(item)}</p>
       <a class="button" href="./library.html?kind=${encodeURIComponent(item.kind)}">查看同类内容</a>
     </article>`;
   const related = hot(items.filter((entry) => entry.id !== item.id && (entry.kind === item.kind || entry.genre === item.genre))).slice(0, 12);
