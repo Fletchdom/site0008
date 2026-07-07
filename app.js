@@ -1,4 +1,4 @@
-const params = new URLSearchParams(location.search);
+﻿const params = new URLSearchParams(location.search);
 const page = document.body.dataset.page;
 const items = Array.isArray(window.SITE_ITEMS) ? window.SITE_ITEMS : [];
 
@@ -18,13 +18,18 @@ function href(item) {
   return `./movie.html?id=${encodeURIComponent(item.id)}`;
 }
 
+function originalLine(item, className = "") {
+  if (/[A-Za-z]/.test(String(item.originalTitle || ""))) return "";
+  return `<p${className ? ` class="${className}"` : ""}>${item.originalTitle}</p>`;
+}
+
 function tile(item, size = "") {
   return `<article class="tile ${size}">
     <a href="${href(item)}">
       <div class="cover">${img(item)}<span>${item.kind}</span></div>
       <div class="tile-copy">
         <h3>${item.title}</h3>
-        <p>${item.originalTitle}</p>
+        ${originalLine(item)}
         <div><b>${item.score}</b><em>${item.year}</em><em>${item.genre}</em></div>
       </div>
     </a>
@@ -79,7 +84,7 @@ function renderHome() {
   ].join("");
   document.getElementById("rankList").innerHTML = score(items).slice(0, 10).map(textLink).join("");
   document.getElementById("freshList").innerHTML = year(items).slice(0, 10).map(textLink).join("");
-  collection("日本电影精选", "真人日影、剧情片、经典导演作品", movies, "movieCollection");
+  collection("日本电影精选", "真实海报、剧情片、经典导演作品", movies, "movieCollection");
   collection("热门日剧追看", "高口碑日剧与热门剧集资料", dramas, "dramaCollection");
   collection("动漫电影推荐", "适合周末观看的动画电影", anime, "animeCollection");
   document.getElementById("dailyGrid").innerHTML = all.slice(0, 42).map((item) => tile(item)).join("");
@@ -108,6 +113,7 @@ function renderLibrary() {
       location.href = `./library.html${next.toString() ? `?${next}` : ""}`;
     };
   });
+
   const search = document.getElementById("searchInput");
   search.value = params.get("q") || "";
   document.getElementById("searchForm").onsubmit = (event) => {
@@ -118,6 +124,7 @@ function renderLibrary() {
     else next.delete("q");
     location.href = `./library.html${next.toString() ? `?${next}` : ""}`;
   };
+
   const sortSelect = document.getElementById("sortSelect");
   sortSelect.value = params.get("sort") || "hot";
   sortSelect.onchange = () => {
@@ -125,6 +132,7 @@ function renderLibrary() {
     next.set("sort", sortSelect.value);
     location.href = `./library.html?${next}`;
   };
+
   const { list, kind, q } = getList();
   document.getElementById("libraryTitle").textContent = q ? `搜索：${q}` : kind === "全部" ? "全部内容" : kind;
   document.getElementById("resultCount").textContent = `${list.length} 部`;
@@ -140,7 +148,7 @@ function renderDetail() {
     <article class="detail-copy">
       <p class="label">${item.kind} · ${item.genre}</p>
       <h1>${item.title}</h1>
-      <p class="origin">${item.originalTitle}</p>
+      ${originalLine(item, "origin")}
       <div class="badges"><span>${item.score} 分</span><span>${item.year}</span><span>${item.genre}</span></div>
       <p>${item.summary}</p>
       <a class="button" href="./library.html?kind=${encodeURIComponent(item.kind)}">查看同类内容</a>
