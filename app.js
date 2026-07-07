@@ -54,7 +54,16 @@ function collection(title, note, list, id) {
 function renderHome() {
   const all = hot(items);
   const hero = all.find((item) => item.kind === "电影") || all[0];
-  const side = all.filter((item) => item.id !== hero.id).slice(0, 2);
+  const picked = new Set([hero.id]);
+  const side = ["日剧", "动漫电影"]
+    .map((kind) => hot(items.filter((item) => item.kind === kind && !picked.has(item.id)))[0])
+    .filter(Boolean);
+  while (side.length < 2) {
+    const next = all.find((item) => !picked.has(item.id) && !side.some((entry) => entry.id === item.id));
+    if (!next) break;
+    side.push(next);
+  }
+  side.slice(0, 2).forEach((item) => picked.add(item.id));
   const movies = hot(items.filter((item) => item.kind === "电影")).slice(0, 7);
   const dramas = hot(items.filter((item) => item.kind === "日剧")).slice(0, 7);
   const anime = hot(items.filter((item) => item.kind === "动漫电影")).slice(0, 7);

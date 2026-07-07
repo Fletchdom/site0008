@@ -61,13 +61,13 @@ h1,h2,h3,p { margin-top: 0; }
   width: min(1320px, calc(100% - 32px));
   margin: 20px auto 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, .48fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .44fr);
+  gap: 12px;
   align-items: stretch;
 }
 .hero-main {
   min-height: 0;
-  aspect-ratio: 16 / 8.2;
+  aspect-ratio: 16 / 8.55;
   overflow: hidden;
   border-radius: 8px;
   background: #dfe5ec;
@@ -95,7 +95,7 @@ h1,h2,h3,p { margin-top: 0; }
 .hero-side {
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .channels,.dashboard,.collection,.section,.page-title,.filters,.detail,.footer {
@@ -180,10 +180,16 @@ h1,h2,h3,p { margin-top: 0; }
 }
 .tile:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .side-tile { min-height: 0; }
+.hero-side .side-tile { position: relative; overflow: hidden; }
 .side-tile a {
   display: grid;
   grid-template-columns: minmax(120px, 42%) minmax(0, 1fr);
   height: 100%;
+}
+.hero-side .side-tile a {
+  position: relative;
+  grid-template-columns: 1fr;
+  overflow: hidden;
 }
 .cover {
   position: relative;
@@ -192,7 +198,12 @@ h1,h2,h3,p { margin-top: 0; }
   background: #dfe5ec;
 }
 .feature-tile .cover { aspect-ratio: 16 / 11; }
-.side-tile .cover { height: 100%; aspect-ratio: auto; }
+.hero-side .side-tile .cover {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+}
 .cover span {
   position: absolute;
   top: 8px;
@@ -216,10 +227,33 @@ h1,h2,h3,p { margin-top: 0; }
   align-content: center;
   padding: 12px;
 }
+.hero-side .side-tile .tile-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 16px 14px 12px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.84));
+}
 .side-tile .tile-copy h3 {
   min-height: auto;
   font-size: 1rem;
 }
+.hero-side .side-tile .tile-copy h3 {
+  margin-bottom: 5px;
+  font-size: 1.14rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+.hero-side .side-tile .tile-copy p,
+.hero-side .side-tile .tile-copy div {
+  color: rgba(255,255,255,.82);
+}
+.hero-side .side-tile .tile-copy div {
+  gap: 8px;
+}
+.hero-side .side-tile .tile-copy b { color: #ffd95a; }
 
 .page-title {
   padding: clamp(28px, 5vw, 58px);
